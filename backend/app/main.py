@@ -58,12 +58,12 @@ if static_dir:
     if os.path.exists(assets_dir):
         app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
-    @app.get("/index.html")
-    @app.get("/")
+    @app.api_route("/index.html", methods=["GET", "HEAD"])
+    @app.api_route("/", methods=["GET", "HEAD"])
     def serve_frontend():
         return FileResponse(os.path.join(static_dir, "index.html"))
 
-    @app.get("/{full_path:path}")
+    @app.api_route("/{full_path:path}", methods=["GET", "HEAD"])
     def catch_all(full_path: str):
         if full_path.startswith("api/") or full_path in ("docs", "openapi.json"):
             raise HTTPException(status_code=404, detail="Not Found")
