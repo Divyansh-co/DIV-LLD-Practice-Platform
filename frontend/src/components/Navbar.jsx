@@ -33,10 +33,10 @@ export default function Navbar({ currentView, setView, activeProblem }) {
       </div>
 
       <div className="user-profile-widget">
-        <div className="profile-avatar">[ID]</div>
+        <div className="profile-avatar">DM</div>
         <div className="profile-info">
-          <span className="profile-name">[CANDIDATE_USER]</span>
-          <span className="profile-role">[STAFF_ENGINEER] • [5_DAY_STREAK]</span>
+          <span className="profile-name">Divyansh Mishra</span>
+          <span className="profile-role">Lead Architect • 5d Streak</span>
         </div>
       </div>
     </nav>

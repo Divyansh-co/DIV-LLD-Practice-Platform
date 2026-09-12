@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CanvasBackground from './components/CanvasBackground';
 import Navbar from './components/Navbar';
+import Watermark from './components/Watermark';
 import DashboardView from './views/DashboardView';
 import PracticeView from './views/PracticeView';
 import EvaluationView from './views/EvaluationView';
@@ -119,6 +120,9 @@ export default function App() {
           </>
         )}
       </main>
+
+      {/* Persistent Author Watermark */}
+      <Watermark />
     </div>
   );
 }
