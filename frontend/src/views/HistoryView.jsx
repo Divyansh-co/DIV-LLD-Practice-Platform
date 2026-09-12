@@ -192,7 +192,7 @@ export default function HistoryView({
                           color: scoreDelta >= 0 ? 'var(--status-completed)' : 'var(--status-failed)',
                         }}
                       >
-                        {scoreDelta >= 0 ? `+${scoreDelta}% delta` : `${scoreDelta}% delta`}
+                        {scoreDelta >= 0 ? `+${scoreDelta}%` : `${scoreDelta}%`}
                       </div>
                     )}
                   </div>

@@ -114,13 +114,13 @@ class EvaluationResult:
     def calculate_grade(self) -> str:
 
         if self.overall_score >= 90:
-            return "S - Production Grade"
+            return "Grade S"
         elif self.overall_score >= 80:
-            return "A - Strong Architecture"
+            return "Grade A"
         elif self.overall_score >= 65:
-            return "B - Acceptable with Minor Flaws"
+            return "Grade B"
         elif self.overall_score >= 50:
-            return "C - Functional but Brittle"
+            return "Grade C"
         return "Needs Rework"
 
 

@@ -89,9 +89,9 @@ export default function SkillRadar({ skills }) {
           boxShadow: 'var(--inner-highlight)',
         }}
       >
-        <span>Target Benchmark</span>
+        <span>Target Score</span>
         <span style={{ color: 'var(--accent-jungle)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-          &gt; 75% Target
+          &gt; 75%
         </span>
       </div>
     </div>

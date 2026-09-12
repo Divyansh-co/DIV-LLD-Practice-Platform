@@ -53,7 +53,7 @@ export default function DashboardView({
       {/* Summary Stats Row */}
       <div className="stats-grid">
         <StatCard
-          label="Attempts Completed"
+          label="Completed Attempts"
           value={metrics.completed_count || '10'}
           placeholderTag="[METRIC_COMPLETED_10]"
           subtext="Total submitted solutions"
@@ -62,8 +62,8 @@ export default function DashboardView({
         <StatCard
           label="Average Score"
           value={`${metrics.average_score || 83.5}%`}
-          placeholderTag="[AVERAGE_SCORE_83.5]"
-          subtext="Across all completed attempts"
+          placeholderTag="[PERCENTILE_8_STAFF]"
+          subtext="Based on completed attempts"
           iconText="★"
         />
         <StatCard
@@ -74,10 +74,10 @@ export default function DashboardView({
           iconText="⚡"
         />
         <StatCard
-          label="Problems Solved"
-          value="3 of 3"
-          placeholderTag="[PROBLEMS_SOLVED_3]"
-          subtext="Problems with at least one attempt"
+          label="Readiness Score"
+          value="85%"
+          placeholderTag="[TIER_1_READINESS_85%]"
+          subtext="Based on completed attempts"
           iconText="⬢"
         />
       </div>
@@ -285,7 +285,7 @@ export default function DashboardView({
                           border: '1px solid var(--border-subtle)',
                         }}
                       >
-                        {sub.grade.split(' ')[0]}
+                        {sub.grade.replace('Grade ', '')}
                       </span>
                     ) : (
                       '—'
