@@ -58,7 +58,7 @@ class LLMEvaluator(Evaluator):
         allow_fallback: bool = False,
     ):
         self.api_key = api_key or os.getenv("GROQ_API_KEY") or os.getenv("GEMINI_API_KEY")
-        self.model = model or os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
+        self.model = model or os.getenv("GROQ_MODEL", "groq/compound-mini")
         self.allow_fallback = allow_fallback or (os.getenv("ALLOW_HEURISTIC_FALLBACK") == "1")
 
     @property
