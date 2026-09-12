@@ -62,13 +62,13 @@ To support iterative mastery, the platform must persist:
 
 ### Gap 1: Conflation of Deterministic Rules and Subjective Reasoning
 Existing tools either force brittle unit tests (which fail valid alternate designs) or rely entirely on unconstrained LLM chat (which hallucinates and varies unpredictably).
-- **Product Direction:** Build a **Dual-Engine Evaluation Architecture**:
+- **Product Direction:** Build a **Two-Part Evaluation Approach**:
   - Deterministic AST static analysis for structural invariants (classes, inheritance, method contracts, God-class thresholds, concurrency locks).
   - Anchored AI rubric evaluation (8 explicit dimensions with structured output) for trade-offs and extensibility.
 
 ### Gap 2: Disposable, One-Time Submissions
 Existing tools treat submissions as one-off checks. Learners cannot track their iterative improvement.
-- **Product Direction:** An **Iterative Attempt Timeline** showing versioned progression: Attempt #1 $\to$ Review explainable feedback $\to$ Attempt #2 $\to$ Verify score delta (+15% improvement).
+- **Product Direction:** An **Attempt History Timeline** showing versioned progression: Attempt #1 $\to$ Review feedback $\to$ Attempt #2 $\to$ Verify score delta (+15% improvement).
 
 ### Gap 3: Vague Feedback
 Telling a candidate "Grade: 70%" provides zero guidance on what to refactor.

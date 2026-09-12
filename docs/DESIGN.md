@@ -1,18 +1,18 @@
 # Design Note: Low-Level Design (LLD) Platform Architecture
 
 ## 1. System Goals & MVP Scope
-The primary goal of this platform is to provide an end-to-end sandbox where learners can practice, submit, and receive rigorous, explainable feedback on their Low-Level Designs.
+The primary goal of this platform is to provide a clean practice environment where developers can solve low-level design problems, submit their code, and get structural and trade-off feedback.
 
 ### In-Scope (MVP)
-- **Curated Problem Catalog (3 Problems):**
+- **Problem Catalog (3 Problems):**
   1. *Multi-Floor Parking Lot* (Vehicle polymorphic hierarchy, spot sizing, Strategy Pattern fee calculation, mutex synchronization).
-  2. *Elevator Dispatcher System* (Directional state machine, LOOK/SCAN pluggable scheduling heuristics, starvation avoidance).
-  3. *State-Driven Vending Machine* (Gang-of-Four State Pattern with `IdleState`, `HasMoneyState`, `DispenseState`, inventory deduction, atomic transactions).
-- **One Deliberately Chosen Submission Format:** Combined Code (Python class declarations with method contracts and attributes) + Concise Design Rationale (Markdown).
+  2. *Elevator Dispatcher System* (Directional state machine, LOOK/SCAN scheduling heuristics, starvation avoidance).
+  3. *State-Driven Vending Machine* (State Pattern with `IdleState`, `HasMoneyState`, `DispenseState`, inventory deduction, atomic transactions).
+- **One Deliberately Chosen Submission Format:** Combined Code (Python class declarations with method contracts and attributes) + Concise Design Notes (Markdown).
 - **Observable Submission State Machine:** `SUBMITTED \to EVALUATING \to COMPLETED | FAILED`. Persisted *before* evaluation begins with idempotency protection.
-- **Dual-Engine Evaluation Architecture:** Deterministic AST checks (40%) + Structured 8-Dimension AI Rubric (60%).
-- **Interactive Assessment Dashboard UI:** Obsidian base (`#0B0F0D`), layered cards (`#141A17`), bright jungle green (`#2FD97F`), soft mint (`#8FEFC3`), warm pearly white (`#F5F7F4`), and a 60fps cursor-reactive background canvas.
-- **Iterative Attempt Progression:** Historical timeline showing score deltas across versions.
+- **Two-Part Evaluation:** AST structural checks (40%) + 8-dimension rubric feedback (60%).
+- **Practice & Assessment Dashboard UI:** Focused interface with dark theme, clear typography, and responsive controls.
+- **Attempt History:** Progression list showing score deltas across versions.
 
 ---
 
