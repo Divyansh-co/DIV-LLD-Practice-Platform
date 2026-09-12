@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 class StartAttemptRequest(BaseModel):
     problem_id: str
-    user_id: str = "[USER_SENIOR_CANDIDATE]"
+    user_id: str = "user_senior_candidate"
 
 
 class SaveDraftRequest(BaseModel):

@@ -176,7 +176,7 @@ class EvaluationService:
             })
         return history
 
-    def get_dashboard_stats(self, user_id: str = "[USER_SENIOR_CANDIDATE]") -> Dict[str, Any]:
+    def get_dashboard_stats(self, user_id: str = "user_senior_candidate") -> Dict[str, Any]:
         """Calculates aggregate analytics for the assessment dashboard."""
         recent_subs = self.submission_repo.list_recent(limit=20)
         completed_evals: List[EvaluationResult] = []
@@ -217,7 +217,7 @@ class EvaluationService:
 
         return {
             "candidate_profile": {
-                "name": "[USER_SENIOR_CANDIDATE]",
+                "name": "Candidate",
                 "target_role": "Software Engineer",
                 "tier": "Level 1",
                 "completed_count": len(completed_evals),

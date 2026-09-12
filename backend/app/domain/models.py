@@ -155,7 +155,7 @@ class Attempt:
     """
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     problem_id: str = ""
-    user_id: str = "[USER_SENIOR_CANDIDATE]"
+    user_id: str = "user_senior_candidate"
     code: str = ""
     design_notes: str = ""
     diagram_dsl: str = ""
@@ -191,7 +191,7 @@ class Submission:
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     attempt_id: str = ""
     problem_id: str = ""
-    user_id: str = "[USER_SENIOR_CANDIDATE]"
+    user_id: str = "user_senior_candidate"
     submitted_code: str = ""
     submitted_notes: str = ""
     submitted_diagram_dsl: str = ""

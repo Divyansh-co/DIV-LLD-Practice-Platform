@@ -55,28 +55,24 @@ export default function DashboardView({
         <StatCard
           label="Completed Attempts"
           value={metrics.completed_count || '10'}
-          placeholderTag="[METRIC_COMPLETED_10]"
           subtext="Total submitted solutions"
           iconText="✓"
         />
         <StatCard
           label="Average Score"
-          value={`${metrics.average_score || 83.5}%`}
-          placeholderTag="[PERCENTILE_8_STAFF]"
-          subtext="Based on completed attempts"
+          value={`${metrics.average_score || '83.5'}%`}
+          subtext="Across all rubric criteria"
           iconText="★"
         />
         <StatCard
           label="Current Streak"
-          value={`${metrics.streak || 5} Days`}
-          placeholderTag="[STREAK_5_DAYS]"
-          subtext="Days in a row with an attempt"
+          value={`${metrics.streak || '5'} days`}
+          subtext="Daily active practice"
           iconText="⚡"
         />
         <StatCard
           label="Readiness Score"
-          value="85%"
-          placeholderTag="[TIER_1_READINESS_85%]"
+          value={`${metrics.readiness_rate || '85'}%`}
           subtext="Based on completed attempts"
           iconText="⬢"
         />

@@ -121,11 +121,11 @@ export default function EvaluationView({
               fontFamily: 'var(--font-mono)',
             }}
           >
-            <span style={{ color: 'var(--accent-jungle)' }}>[1] Queued ✓</span>
+            <span style={{ color: 'var(--accent-jungle)' }}>Step 1: Queued ✓</span>
             <span style={{ color: isQueued ? 'var(--text-muted)' : 'var(--accent-jungle)' }}>
-              {isQueued ? '[2] Evaluating' : '[2] Evaluating •'}
+              {isQueued ? 'Step 2: Evaluating' : 'Step 2: Evaluating •'}
             </span>
-            <span>[3] Results</span>
+            <span>Step 3: Results</span>
           </div>
 
           <div style={{ marginTop: '1.5rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>

@@ -86,6 +86,14 @@ def _ensure_tables_exist(conn: sqlite3.Connection) -> None:
     """)
     conn.commit()
 
+    # Migration: Ensure content_hash column exists on existing submissions tables
+    try:
+        cursor.execute("ALTER TABLE submissions ADD COLUMN content_hash TEXT;")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+
+
 
 def init_db(db_path: Optional[str] = None) -> None:
     """Initializes the database schema if tables do not exist."""

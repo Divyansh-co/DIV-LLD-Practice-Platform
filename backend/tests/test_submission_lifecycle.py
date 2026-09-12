@@ -199,4 +199,4 @@ def test_dashboard_stats():
     assert "candidate_profile" in stats
     assert "metrics" in stats
     assert "skill_radar" in stats
-    assert stats["candidate_profile"]["name"] == "[USER_SENIOR_CANDIDATE]"
+    assert stats["candidate_profile"]["name"] == "Candidate"

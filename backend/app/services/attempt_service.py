@@ -14,7 +14,7 @@ class AttemptService:
         self.attempt_repo = attempt_repo or AttemptRepository()
         self.problem_repo = problem_repo or ProblemRepository()
 
-    def get_or_create_attempt(self, problem_id: str, user_id: str = "[USER_SENIOR_CANDIDATE]") -> Attempt:
+    def get_or_create_attempt(self, problem_id: str, user_id: str = "user_senior_candidate") -> Attempt:
         """Resumes active attempt or creates a new one seeded with starter template."""
         existing = self.attempt_repo.get_latest_by_problem_and_user(problem_id, user_id)
         if existing and existing.status == AttemptStatus.IN_PROGRESS:

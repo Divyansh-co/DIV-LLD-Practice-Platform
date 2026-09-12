@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function StatCard({ label, value, placeholderTag, subtext, iconText }) {
+export default function StatCard({ label, value, subtext, iconText }) {
   return (
     <div className="stat-card">
       <div className="stat-header">
@@ -9,10 +9,6 @@ export default function StatCard({ label, value, placeholderTag, subtext, iconTe
       </div>
 
       <div className="stat-value">{value}</div>
-
-      {placeholderTag && (
-        <div className="mock-tag">{placeholderTag}</div>
-      )}
 
       {subtext && <div className="stat-footer">{subtext}</div>}
     </div>

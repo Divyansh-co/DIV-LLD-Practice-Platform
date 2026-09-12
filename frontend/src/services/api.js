@@ -28,7 +28,7 @@ export const api = {
   getProblem: (slug) => fetchJson(`/problems/${slug}`),
 
   // Attempts & Workstations
-  startAttempt: (problemId, userId = '[USER_SENIOR_CANDIDATE]') =>
+  startAttempt: (problemId, userId = 'user_senior_candidate') =>
     fetchJson('/attempts', {
       method: 'POST',
       body: JSON.stringify({ problem_id: problemId, user_id: userId }),

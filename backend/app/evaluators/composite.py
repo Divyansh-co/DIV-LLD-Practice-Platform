@@ -56,7 +56,10 @@ class CompositeEvaluator(Evaluator):
                 f"AI evaluation service timed out after {int(self.timeout_seconds)} seconds. Please retry."
             )
         except Exception as e:
-            raise RuntimeError(f"AI evaluation failed: {e}")
+            msg = str(e)
+            if not msg.startswith("AI evaluation"):
+                msg = f"AI evaluation failed: {msg}"
+            raise RuntimeError(msg)
 
         # Step 3: Aggregate scores (Deterministic max 40 + AI rubric max 60 = 100)
         overall_score = round(det_score + ai_score, 1)
