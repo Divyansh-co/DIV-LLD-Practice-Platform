@@ -6,6 +6,8 @@ from typing import Optional
 
 
 def get_db_path() -> str:
+    if os.getenv("VERCEL"):
+        return os.getenv("LLD_DATABASE_URL", "/tmp/lld_platform.db")
     return os.getenv("LLD_DATABASE_URL", "lld_platform.db")
 
 
@@ -14,7 +16,10 @@ def get_db_connection(db_path: Optional[str] = None) -> sqlite3.Connection:
     path = db_path or get_db_path()
     conn = sqlite3.connect(path, check_same_thread=False)
     conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode = WAL;")
+    try:
+        conn.execute("PRAGMA journal_mode = WAL;")
+    except sqlite3.OperationalError:
+        pass
     conn.execute("PRAGMA foreign_keys = ON;")
     
     # Auto-ensure tables exist

@@ -1,0 +1,7 @@
+backend/tests/
+backend/.pytest_cache/
+backend/__pycache__/
+*.db
+*.sqlite3
+frontend/node_modules/
+.git/
