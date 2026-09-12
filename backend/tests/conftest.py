@@ -19,6 +19,7 @@ def test_db():
         temp_path = tf.name
 
     os.environ["LLD_DATABASE_URL"] = temp_path
+    os.environ["ALLOW_HEURISTIC_FALLBACK"] = "1"
     init_db(temp_path)
     repo = ProblemRepository(temp_path)
     repo.seed_defaults()

@@ -31,6 +31,7 @@ class AttemptStatus(str, Enum):
 
 
 class SubmissionStatus(str, Enum):
+    PENDING = "PENDING"          # Queued before evaluation begins
     SUBMITTED = "SUBMITTED"      # Persisted before evaluation begins
     EVALUATING = "EVALUATING"    # Actively processed by evaluator
     COMPLETED = "COMPLETED"      # Evaluation finished successfully
@@ -211,8 +212,8 @@ class Submission:
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
     def start_evaluating(self) -> None:
-        """Transitions SUBMITTED or FAILED to EVALUATING."""
-        if self.status not in (SubmissionStatus.SUBMITTED, SubmissionStatus.FAILED):
+        """Transitions PENDING, SUBMITTED or FAILED to EVALUATING."""
+        if self.status not in (SubmissionStatus.PENDING, SubmissionStatus.SUBMITTED, SubmissionStatus.FAILED):
             raise ValueError(f"Cannot evaluate submission in status {self.status}")
         self.status = SubmissionStatus.EVALUATING
         self.error_message = None
@@ -233,8 +234,8 @@ class Submission:
         self.updated_at = datetime.now(timezone.utc)
 
     def prepare_retry(self) -> None:
-        """Idempotent retry preparation: resets status to SUBMITTED."""
-        if self.status not in (SubmissionStatus.FAILED, SubmissionStatus.SUBMITTED):
+        """Idempotent retry preparation: resets status to PENDING / SUBMITTED."""
+        if self.status not in (SubmissionStatus.FAILED, SubmissionStatus.SUBMITTED, SubmissionStatus.PENDING):
             raise ValueError(f"Only failed or submitted submissions can be retried, current: {self.status}")
         self.status = SubmissionStatus.SUBMITTED
         self.retry_count += 1

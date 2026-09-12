@@ -13,6 +13,7 @@ export default function EvaluationView({
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('rubric'); // 'rubric' | 'checks' | 'llm' | 'refactor'
   const [isRetrying, setIsRetrying] = useState(false);
+  const [retryTrigger, setRetryTrigger] = useState(0);
 
   // Poll for evaluation completion
   useEffect(() => {
@@ -25,38 +26,43 @@ export default function EvaluationView({
         if (!isMounted) return;
 
         setSubmission(data);
-        if (data.evaluation) {
+        if (data.status === 'COMPLETED' && data.evaluation) {
           setEvaluation(data.evaluation);
           setLoading(false);
           clearInterval(intervalId);
         } else if (data.status === 'FAILED') {
-          setError(data.error_message || 'Evaluation failed');
+          setError(
+            data.error_message ||
+            'The AI evaluation service timed out or was temporarily unavailable. Your code and notes are safely saved.'
+          );
           setLoading(false);
           clearInterval(intervalId);
         }
       } catch (err) {
         if (isMounted) {
-          setError(err.message);
+          setError(err.message || 'Could not fetch evaluation status.');
           setLoading(false);
+          clearInterval(intervalId);
         }
       }
     }
 
     fetchStatus();
-    intervalId = setInterval(fetchStatus, 800);
+    intervalId = setInterval(fetchStatus, 1000);
 
     return () => {
       isMounted = false;
       clearInterval(intervalId);
     };
-  }, [submissionId]);
+  }, [submissionId, retryTrigger]);
 
   const handleRetry = async () => {
     setIsRetrying(true);
     try {
       await api.retrySubmission(submissionId);
-      setLoading(true);
       setError(null);
+      setLoading(true);
+      setRetryTrigger((prev) => prev + 1);
     } catch (err) {
       alert(`Retry failed: ${err.message}`);
     } finally {
@@ -64,7 +70,12 @@ export default function EvaluationView({
     }
   };
 
-  if (loading && (!submission || submission.status !== 'COMPLETED')) {
+  const isEvaluatingState = loading || (submission && submission.status !== 'COMPLETED' && submission.status !== 'FAILED');
+
+  if (isEvaluatingState && !error) {
+    const currentStatus = submission?.status || 'SUBMITTED';
+    const isQueued = currentStatus === 'SUBMITTED' || currentStatus === 'PENDING';
+
     return (
       <div style={{ maxWidth: '800px', margin: '4rem auto', textAlign: 'center' }}>
         <div
@@ -89,11 +100,14 @@ export default function EvaluationView({
             }}
           />
           <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+          
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>
-            Evaluating Solution
+            {isQueued ? 'Submission Queued' : 'Evaluating Solution'}
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '2rem' }}>
-            Running structural checks and evaluating design trade-offs...
+            {isQueued
+              ? 'Your solution has been saved and is queued for evaluation...'
+              : 'Running structural AST checks and evaluating design rubric criteria...'}
           </p>
 
           <div
@@ -107,9 +121,15 @@ export default function EvaluationView({
               fontFamily: 'var(--font-mono)',
             }}
           >
-            <span>[1] Saved ✓</span>
-            <span style={{ color: 'var(--accent-jungle)' }}>[2] Structural Checks •</span>
-            <span>[3] Design Review</span>
+            <span style={{ color: 'var(--accent-jungle)' }}>[1] Queued ✓</span>
+            <span style={{ color: isQueued ? 'var(--text-muted)' : 'var(--accent-jungle)' }}>
+              {isQueued ? '[2] Evaluating' : '[2] Evaluating •'}
+            </span>
+            <span>[3] Results</span>
+          </div>
+
+          <div style={{ marginTop: '1.5rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+            Status: <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-pearly)' }}>{currentStatus}</span>
           </div>
         </div>
       </div>
@@ -128,15 +148,34 @@ export default function EvaluationView({
             textAlign: 'center',
           }}
         >
-          <h2 style={{ color: 'var(--status-failed)', marginBottom: '0.75rem', fontWeight: 800 }}>
-            Evaluation Error
+          <div
+            style={{
+              display: 'inline-block',
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              background: 'rgba(239, 68, 68, 0.15)',
+              color: 'var(--status-failed)',
+              lineHeight: '44px',
+              fontSize: '1.25rem',
+              fontWeight: 'bold',
+              marginBottom: '1rem',
+            }}
+          >
+            ✕
+          </div>
+          <h2 style={{ color: 'var(--status-failed)', marginBottom: '0.75rem', fontWeight: 800, fontSize: '1.4rem' }}>
+            Evaluation Unsuccessful
           </h2>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '1.75rem', fontSize: '0.92rem' }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '1.75rem', fontSize: '0.92rem', lineHeight: 1.6 }}>
             {error}
           </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             <button className="btn btn-primary" onClick={handleRetry} disabled={isRetrying}>
-              {isRetrying ? 'Retrying...' : 'Retry ↺'}
+              {isRetrying ? 'Retrying evaluation...' : 'Retry Evaluation ↺'}
+            </button>
+            <button className="btn btn-secondary" onClick={onIterate}>
+              Edit Solution
             </button>
             <button className="btn btn-outline" onClick={onBackToDashboard}>
               Back to Dashboard

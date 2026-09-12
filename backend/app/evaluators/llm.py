@@ -17,9 +17,21 @@ criterion -> score -> evidence -> concern -> suggestion -> confidence
 import json
 import os
 from typing import Any, Dict, List, Optional
+from dotenv import load_dotenv
 import httpx
 from app.domain.models import LLMFeedbackReport, Problem, RubricDimensionResult, Submission
 from app.evaluators.base import Evaluator
+
+# Ensure environment variables from .env files are loaded
+load_dotenv()
+_base_dir = os.path.dirname(os.path.abspath(__file__))
+for _env_path in [
+    os.path.abspath(os.path.join(_base_dir, "..", "..", "..", ".env")),
+    os.path.abspath(os.path.join(_base_dir, "..", "..", ".env")),
+    os.path.abspath(os.path.join(_base_dir, "..", ".env")),
+]:
+    if os.path.exists(_env_path):
+        load_dotenv(_env_path)
 
 RUBRIC_CRITERIA = [
     "Requirement Understanding",
@@ -36,21 +48,31 @@ RUBRIC_CRITERIA = [
 class LLMEvaluator(Evaluator):
     """Evaluates qualitative trade-offs and scores along 8 concrete rubric dimensions."""
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "llama-3.3-70b-versatile"):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        model: Optional[str] = None,
+        allow_fallback: bool = False,
+    ):
         self.api_key = api_key or os.getenv("GROQ_API_KEY") or os.getenv("GEMINI_API_KEY")
-        self.model = model
+        self.model = model or os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
+        self.allow_fallback = allow_fallback or (os.getenv("ALLOW_HEURISTIC_FALLBACK") == "1")
 
     @property
     def name(self) -> str:
         return "SemanticRubricEvaluator"
 
     async def evaluate(self, submission: Submission, problem: Problem) -> Dict[str, Any]:
-        """Runs structured AI evaluation or high-fidelity heuristic fallback."""
-        code = submission.submitted_code
-        notes = submission.submitted_notes
+        """Runs structured AI evaluation using the configured LLM API."""
+        has_valid_key = (
+            self.api_key
+            and not self.api_key.startswith("[")
+            and len(self.api_key) > 20
+        )
 
-        # Attempt external API call if valid key exists
-        if self.api_key and not self.api_key.startswith("[") and len(self.api_key) > 20:
+        can_fallback = self.allow_fallback or (os.getenv("ALLOW_HEURISTIC_FALLBACK") == "1")
+
+        if has_valid_key:
             try:
                 report, score = await self._call_llm_api(submission, problem)
                 return {
@@ -61,17 +83,33 @@ class LLMEvaluator(Evaluator):
                     "source": "live_llm",
                 }
             except Exception as e:
-                print(f"[LLMEvaluator] API call failed: {e}. Falling back to heuristic rubric reasoner.")
+                if can_fallback:
+                    print(f"[LLMEvaluator] API call failed: {e}. Falling back to heuristic rubric.")
+                    report, score = self._generate_heuristic_rubric(submission, problem)
+                    return {
+                        "score": score,
+                        "max_score": 60.0,
+                        "feedback": report,
+                        "dimensions": report.dimensions,
+                        "source": "heuristic_rubric_engine",
+                    }
+                else:
+                    raise RuntimeError(f"AI evaluation failed: {e}")
 
-        # Reliable heuristic fallback producing exact structured shape
-        report, score = self._generate_heuristic_rubric(submission, problem)
-        return {
-            "score": score,
-            "max_score": 60.0,
-            "feedback": report,
-            "dimensions": report.dimensions,
-            "source": "heuristic_rubric_engine",
-        }
+        # If key is missing or invalid
+        if can_fallback:
+            report, score = self._generate_heuristic_rubric(submission, problem)
+            return {
+                "score": score,
+                "max_score": 60.0,
+                "feedback": report,
+                "dimensions": report.dimensions,
+                "source": "heuristic_rubric_engine",
+            }
+
+        raise RuntimeError(
+            "AI evaluation service is unavailable: valid GROQ_API_KEY is not configured."
+        )
 
     async def _call_llm_api(self, submission: Submission, problem: Problem) -> tuple[LLMFeedbackReport, float]:
         """Prompts LLM strictly anchored to the 8 rubric dimensions."""
@@ -133,41 +171,98 @@ Return ONLY valid JSON matching this schema:
             "response_format": {"type": "json_object"},
         }
 
-        async with httpx.AsyncClient(timeout=8.0) as client:
-            resp = await client.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
-            resp.raise_for_status()
-            data = resp.json()
-            parsed = json.loads(data["choices"][0]["message"]["content"])
+        import asyncio
+        max_retries = 3
+        data = None
+        for attempt_idx in range(max_retries):
+            async with httpx.AsyncClient(timeout=25.0) as client:
+                resp = await client.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
+                if resp.status_code == 429 and attempt_idx < max_retries - 1:
+                    await asyncio.sleep(2.0 * (attempt_idx + 1))
+                    continue
+                resp.raise_for_status()
+                data = resp.json()
+                break
 
-            dims = [
-                RubricDimensionResult(
-                    criterion=d["criterion"],
-                    score=float(d["score"]),
-                    max_score=float(d.get("max_score", 7.5)),
-                    evidence=d["evidence"],
-                    concern=d["concern"],
-                    suggestion=d["suggestion"],
-                    confidence=float(d.get("confidence", 0.9)),
+        content = data["choices"][0]["message"]["content"].strip()
+
+        # Clean markdown code fences if present in the raw output
+        if content.startswith("```"):
+            lines = content.splitlines()
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].startswith("```"):
+                lines = lines[:-1]
+            content = "\n".join(lines).strip()
+
+        parsed = json.loads(content)
+
+        raw_dims = parsed.get("dimensions", [])
+        dims_by_name = {
+            d.get("criterion", "").strip().lower(): d
+            for d in raw_dims
+            if isinstance(d, dict) and "criterion" in d
+        }
+
+        dims = []
+        for criterion in RUBRIC_CRITERIA:
+            matched = dims_by_name.get(criterion.lower())
+            if not matched:
+                for k, v in dims_by_name.items():
+                    if k in criterion.lower() or criterion.lower() in k:
+                        matched = v
+                        break
+
+            if matched:
+                score = float(matched.get("score", 5.0))
+                max_score = float(matched.get("max_score", 7.5))
+                score = max(0.0, min(max_score, score))
+                dims.append(
+                    RubricDimensionResult(
+                        criterion=criterion,
+                        score=round(score, 1),
+                        max_score=max_score,
+                        evidence=str(matched.get("evidence", "Candidate code structure.")),
+                        concern=str(matched.get("concern", "No critical concerns noted.")),
+                        suggestion=str(matched.get("suggestion", "Continue following SOLID principles.")),
+                        confidence=float(matched.get("confidence", 0.9)),
+                    )
                 )
-                for d in parsed.get("dimensions", [])
-            ]
+            else:
+                dims.append(
+                    RubricDimensionResult(
+                        criterion=criterion,
+                        score=5.0,
+                        max_score=7.5,
+                        evidence="Evaluation completed based on submitted code.",
+                        concern="Review design notes against standard practices.",
+                        suggestion="Ensure clear separation of concerns.",
+                        confidence=0.85,
+                    )
+                )
 
-            total_score = sum(d.score for d in dims)
-            normalized_score = round(min(60.0, max(0.0, total_score)), 1)
+        total_score = sum(d.score for d in dims)
+        normalized_score = round(min(60.0, max(0.0, total_score)), 1)
 
-            report = LLMFeedbackReport(
-                summary=parsed.get("summary", "Solid architectural foundation."),
-                dimensions=dims,
-                trade_off_analysis=parsed.get("trade_off_analysis", ""),
-                extensibility_critique=parsed.get("extensibility_critique", ""),
-                edge_cases_analysis=parsed.get("edge_cases_analysis", ""),
-                alternative_approaches=parsed.get("alternative_approaches", []),
-                suggested_refactor_diff=parsed.get("suggested_refactor_diff", ""),
-            )
-            return report, normalized_score
+        report = LLMFeedbackReport(
+            summary=parsed.get("summary", "Solid architectural foundation."),
+            dimensions=dims,
+            trade_off_analysis=parsed.get("trade_off_analysis", ""),
+            extensibility_critique=parsed.get("extensibility_critique", ""),
+            edge_cases_analysis=parsed.get("edge_cases_analysis", ""),
+            alternative_approaches=parsed.get("alternative_approaches", []),
+            suggested_refactor_diff=parsed.get("suggested_refactor_diff", ""),
+        )
+        return report, normalized_score
 
     def _generate_heuristic_rubric(self, submission: Submission, problem: Problem) -> tuple[LLMFeedbackReport, float]:
-        """Heuristic rule-grounded generator for the 8 structured rubric dimensions."""
+        """Heuristic rule-grounded generator for the 8 structured rubric dimensions.
+        
+        NOTE: This generator is a deterministic templated stand-in for the LLM step.
+        It is retained only as an offline test fallback when ALLOW_HEURISTIC_FALLBACK=1
+        due to test environment / API availability constraints. In standard runs,
+        the real LLM call above is used.
+        """
         code = submission.submitted_code
         notes = submission.submitted_notes
 

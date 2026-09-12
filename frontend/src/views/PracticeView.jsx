@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
+import MermaidRenderer from '../components/MermaidRenderer';
 
 export default function PracticeView({
   problem,
@@ -11,6 +12,7 @@ export default function PracticeView({
   const [code, setCode] = useState(problem.starter_code || '');
   const [notes, setNotes] = useState(problem.default_notes_template || '');
   const [diagramDsl, setDiagramDsl] = useState(problem.starter_diagram_dsl || '');
+  const [diagramViewMode, setDiagramViewMode] = useState('diagram'); // 'diagram' | 'edit'
   const [attemptId, setAttemptId] = useState(null);
   const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved'
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -314,20 +316,60 @@ export default function PracticeView({
 
             {rightTab === 'diagram' && (
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <textarea
-                  className="code-editor-area"
-                  style={{ height: '320px' }}
-                  value={diagramDsl}
-                  onChange={(e) => setDiagramDsl(e.target.value)}
-                  placeholder="Optional: write Mermaid classDiagram syntax..."
-                  spellCheck="false"
-                />
                 <div
                   style={{
-                    padding: '1rem',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.45rem 0.85rem',
+                    background: 'var(--bg-obsidian)',
+                    borderBottom: '1px solid var(--border-subtle)',
+                  }}
+                >
+                  <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                    Class Diagram View
+                  </span>
+                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                    <button
+                      type="button"
+                      className={`btn ${diagramViewMode === 'diagram' ? 'btn-primary' : 'btn-outline'}`}
+                      style={{ fontSize: '0.74rem', padding: '0.2rem 0.55rem' }}
+                      onClick={() => setDiagramViewMode('diagram')}
+                    >
+                      Diagram
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn ${diagramViewMode === 'edit' ? 'btn-primary' : 'btn-outline'}`}
+                      style={{ fontSize: '0.74rem', padding: '0.2rem 0.55rem' }}
+                      onClick={() => setDiagramViewMode('edit')}
+                    >
+                      Edit Syntax
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ flex: 1, overflow: 'auto', minHeight: '340px' }}>
+                  {diagramViewMode === 'diagram' ? (
+                    <MermaidRenderer chart={diagramDsl} />
+                  ) : (
+                    <textarea
+                      className="code-editor-area"
+                      style={{ height: '100%', minHeight: '340px', width: '100%' }}
+                      value={diagramDsl}
+                      onChange={(e) => setDiagramDsl(e.target.value)}
+                      placeholder="Optional: write Mermaid classDiagram syntax..."
+                      spellCheck="false"
+                    />
+                  )}
+                </div>
+
+                <div
+                  style={{
+                    padding: '0.75rem 1rem',
                     background: 'var(--bg-obsidian)',
                     borderTop: '1px solid var(--border-subtle)',
-                    fontSize: '0.8rem',
+                    fontSize: '0.78rem',
                     color: 'var(--text-muted)',
                   }}
                 >

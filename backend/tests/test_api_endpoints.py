@@ -60,10 +60,10 @@ def test_attempt_draft_and_submission_workflow():
     assert sub_data["status"] in ("SUBMITTED", "PENDING", "EVALUATING")
 
 
-    # 4. Poll until completed (max 5s)
+    # 4. Poll until completed (max 15s)
     completed = False
-    for _ in range(10):
-        time.sleep(0.3)
+    for _ in range(30):
+        time.sleep(0.5)
         poll_resp = client.get(f"/api/v1/submissions/{sub_id}")
         assert poll_resp.status_code == 200
         poll_data = poll_resp.json()
@@ -72,8 +72,10 @@ def test_attempt_draft_and_submission_workflow():
             assert poll_data["evaluation"] is not None
             assert poll_data["evaluation"]["overall_score"] > 0
             break
+        elif poll_data["status"] == "FAILED":
+            break
 
-    assert completed, "Submission did not complete within expected timeout"
+    assert completed, f"Submission did not complete within expected timeout. Current status: {poll_data.get('status')}, error: {poll_data.get('error_message')}"
 
 
 def test_dashboard_stats_endpoint():

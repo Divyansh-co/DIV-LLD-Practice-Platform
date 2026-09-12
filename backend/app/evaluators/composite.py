@@ -19,7 +19,7 @@ class CompositeEvaluator(Evaluator):
         self,
         deterministic_evaluator: Optional[DeterministicEvaluator] = None,
         llm_evaluator: Optional[LLMEvaluator] = None,
-        timeout_seconds: float = 8.0,
+        timeout_seconds: float = 25.0,
     ):
         self.deterministic_evaluator = deterministic_evaluator or DeterministicEvaluator()
         self.llm_evaluator = llm_evaluator or LLMEvaluator()
@@ -52,15 +52,11 @@ class CompositeEvaluator(Evaluator):
             llm_feedback = llm_output.get("feedback")
             dimensions = llm_output.get("dimensions", [])
         except asyncio.TimeoutError:
-            print("[CompositeEvaluator] LLM evaluation timed out. Using instant heuristic feedback.")
-            heuristic_output = self.llm_evaluator._generate_heuristic_rubric(submission, problem)
-            llm_feedback, ai_score = heuristic_output
-            dimensions = llm_feedback.dimensions
+            raise RuntimeError(
+                f"AI evaluation service timed out after {int(self.timeout_seconds)} seconds. Please retry."
+            )
         except Exception as e:
-            print(f"[CompositeEvaluator] Exception during LLM evaluation: {e}. Fallback to heuristic.")
-            heuristic_output = self.llm_evaluator._generate_heuristic_rubric(submission, problem)
-            llm_feedback, ai_score = heuristic_output
-            dimensions = llm_feedback.dimensions
+            raise RuntimeError(f"AI evaluation failed: {e}")
 
         # Step 3: Aggregate scores (Deterministic max 40 + AI rubric max 60 = 100)
         overall_score = round(det_score + ai_score, 1)

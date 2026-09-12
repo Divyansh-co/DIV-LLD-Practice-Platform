@@ -9,6 +9,7 @@ from app.api.schemas import (
     StartAttemptRequest,
     SubmissionResponseSchema,
 )
+from app.domain.models import SubmissionStatus
 from app.repositories.storage import ProblemRepository
 from app.services.attempt_service import AttemptService
 from app.services.evaluation_service import EvaluationService
@@ -138,7 +139,8 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, status
 def submit_attempt(attempt_id: str, background_tasks: BackgroundTasks) -> Dict[str, Any]:
     try:
         sub = evaluation_service.create_submission(attempt_id)
-        background_tasks.add_task(evaluation_service.process_submission, sub.id)
+        if sub.status in (SubmissionStatus.SUBMITTED, SubmissionStatus.PENDING):
+            background_tasks.add_task(evaluation_service.process_submission, sub.id)
         return {
             "id": sub.id,
             "attempt_id": sub.attempt_id,

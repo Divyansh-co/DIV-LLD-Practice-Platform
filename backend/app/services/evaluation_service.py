@@ -44,9 +44,14 @@ class EvaluationService:
         )
         content_hash = temp_sub.compute_hash()
 
-        # Check if an identical submission is currently evaluating or already completed
+        # Check if an identical submission is currently pending, evaluating, or already completed
         existing = self.submission_repo.get_by_content_hash(content_hash)
-        if existing and existing.status in (SubmissionStatus.EVALUATING, SubmissionStatus.COMPLETED):
+        if existing and existing.status in (
+            SubmissionStatus.PENDING,
+            SubmissionStatus.SUBMITTED,
+            SubmissionStatus.EVALUATING,
+            SubmissionStatus.COMPLETED,
+        ):
             return existing
 
         # Persist submission in SUBMITTED state before evaluation begins
@@ -70,7 +75,7 @@ class EvaluationService:
     async def submit_attempt(self, attempt_id: str) -> Submission:
         """Helper method that creates submission and launches background evaluation."""
         saved_sub = self.create_submission(attempt_id)
-        if saved_sub.status != SubmissionStatus.COMPLETED:
+        if saved_sub.status in (SubmissionStatus.SUBMITTED, SubmissionStatus.PENDING):
             asyncio.create_task(self.process_submission(saved_sub.id))
         return saved_sub
 
@@ -114,7 +119,7 @@ class EvaluationService:
             # Transition: EVALUATING -> FAILED
             submission.fail_evaluation(str(e))
             self.submission_repo.save(submission)
-            raise
+            return None
 
 
     def prepare_submission_retry(self, submission_id: str) -> Submission:
