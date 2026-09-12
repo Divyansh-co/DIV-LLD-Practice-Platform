@@ -24,3 +24,12 @@ This platform gives developers a repeatable loop (`attempt → submit → review
 - **Frontend:** React (Vite)
 - **Docs:** Design notes and architectural records in `/docs`
 
+- Design decisions worth calling out
+Why a monolith: the assignment scope doesn't need microservices or distributed infra — a single backend service keeps the domain model easy to reason about, which is where the actual grading weight is.
+Why split evaluation into deterministic + LLM: treating every check as an LLM call would make feedback inconsistent and slow. Structural checks are cheap and reliable on their own; the LLM is reserved for the parts that genuinely need judgment (trade-offs, abstraction quality).
+Why an explicit submission state machine: evaluation (especially the LLM part) can be slow or fail. Persisting the submission before evaluation starts, and giving it a clear status, means a failed evaluation doesn't lose the learner's work and the UI always has something honest to show.
+Known limitations
+Only a handful of problems are seeded — not meant to be a full curriculum yet.
+No retry/backoff strategy beyond basic failure handling; a production version would need one.
+Evaluation rubric is fixed per problem type — no support yet for a human-reviewer evaluator, though the Evaluator interface is written so one could be added without touching the practice flow.
+
