@@ -8,16 +8,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-# Load environment variables from local and root directories
-load_dotenv()
-_base_dir = os.path.dirname(os.path.abspath(__file__))
-for _env_path in [
-    os.path.abspath(os.path.join(_base_dir, "..", "..", "..", ".env")),
-    os.path.abspath(os.path.join(_base_dir, "..", "..", ".env")),
-    os.path.abspath(os.path.join(_base_dir, "..", ".env")),
-]:
-    if os.path.exists(_env_path):
-        load_dotenv(_env_path)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    _base_dir = os.path.dirname(os.path.abspath(__file__))
+    for _env_path in [
+        os.path.abspath(os.path.join(_base_dir, "..", "..", "..", ".env")),
+        os.path.abspath(os.path.join(_base_dir, "..", "..", ".env")),
+        os.path.abspath(os.path.join(_base_dir, "..", ".env")),
+    ]:
+        if os.path.exists(_env_path):
+            load_dotenv(_env_path)
+except ImportError:
+    pass
 
 from app.api.routes import router
 from app.repositories.database import init_db

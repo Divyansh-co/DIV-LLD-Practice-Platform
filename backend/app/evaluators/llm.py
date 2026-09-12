@@ -17,21 +17,24 @@ criterion -> score -> evidence -> concern -> suggestion -> confidence
 import json
 import os
 from typing import Any, Dict, List, Optional
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    _base_dir = os.path.dirname(os.path.abspath(__file__))
+    for _env_path in [
+        os.path.abspath(os.path.join(_base_dir, "..", "..", "..", "..", ".env")),
+        os.path.abspath(os.path.join(_base_dir, "..", "..", "..", ".env")),
+        os.path.abspath(os.path.join(_base_dir, "..", "..", ".env")),
+        os.path.abspath(os.path.join(_base_dir, "..", ".env")),
+    ]:
+        if os.path.exists(_env_path):
+            load_dotenv(_env_path)
+except ImportError:
+    pass
+
 import httpx
 from app.domain.models import LLMFeedbackReport, Problem, RubricDimensionResult, Submission
 from app.evaluators.base import Evaluator
-
-# Ensure environment variables from .env files are loaded
-load_dotenv()
-_base_dir = os.path.dirname(os.path.abspath(__file__))
-for _env_path in [
-    os.path.abspath(os.path.join(_base_dir, "..", "..", "..", ".env")),
-    os.path.abspath(os.path.join(_base_dir, "..", "..", ".env")),
-    os.path.abspath(os.path.join(_base_dir, "..", ".env")),
-]:
-    if os.path.exists(_env_path):
-        load_dotenv(_env_path)
 
 RUBRIC_CRITERIA = [
     "Requirement Understanding",
