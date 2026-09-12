@@ -192,7 +192,7 @@ class EvaluationService:
             "SOLID: Single Responsibility": 78.0 if completed_evals else 65.0,
             "SOLID: Open/Closed & Strategy": 88.0 if completed_evals else 75.0,
             "State Modeling & Encapsulation": 85.0 if completed_evals else 60.0,
-            "Architectural Extensibility": 80.0 if completed_evals else 68.0,
+            "Extensibility & Modularity": 80.0 if completed_evals else 68.0,
         }
 
         # Build recent activity items
@@ -213,8 +213,8 @@ class EvaluationService:
         return {
             "candidate_profile": {
                 "name": "[USER_SENIOR_CANDIDATE]",
-                "target_role": "Staff / L6 Software Architect",
-                "tier": "Tier-1 Mastery",
+                "target_role": "Software Engineer",
+                "tier": "Level 1",
                 "completed_count": len(completed_evals),
                 "streak_days": 5,
                 "last_active": "2026-09-11",

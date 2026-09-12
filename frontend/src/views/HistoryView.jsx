@@ -48,10 +48,10 @@ export default function HistoryView({
       >
         <div>
           <h1 style={{ fontSize: '1.8rem', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: '0.35rem' }}>
-            Iterative Attempt Progression
+            Attempt History
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem' }}>
-            Review how your Low-Level Designs have evolved across iterations, tracking score deltas and rule fixes.
+            See past attempts and track your progress on each problem.
           </p>
         </div>
 
@@ -103,7 +103,7 @@ export default function HistoryView({
             style={{ fontSize: '0.85rem' }}
             onClick={() => onStartNewAttempt(currentProblem)}
           >
-            Open Studio for New Iteration →
+            Try Again →
           </button>
         </div>
       )}
@@ -118,7 +118,7 @@ export default function HistoryView({
           className="card"
           style={{ textAlign: 'center', padding: '3rem 1.5rem', color: 'var(--text-muted)' }}
         >
-          No submissions recorded for this problem yet. Launch the studio to submit your first solution!
+          No submissions recorded for this problem yet. Start an attempt to submit your first solution.
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -202,7 +202,7 @@ export default function HistoryView({
                     onClick={() => onSelectSubmission(item.submission_id)}
                     style={{ fontSize: '0.82rem' }}
                   >
-                    Inspect Snapshot →
+                    View Feedback →
                   </button>
                 </div>
               </div>

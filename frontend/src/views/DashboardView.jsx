@@ -40,44 +40,44 @@ export default function DashboardView({
       <div style={{ marginBottom: '2.5rem' }}>
         <div className="hero-badge">
           <span>✦</span>
-          <span>ARCHITECT SANDBOX • LLD EVALUATION ENGINE</span>
+          <span>PRACTICE &amp; FEEDBACK</span>
         </div>
         <h1 className="hero-headline">
-          Low-Level Design Practice &amp; Assessment Studio
+          Low-Level Design Practice
         </h1>
         <p className="hero-description">
-          Practice object-oriented architecture, receive dual-engine deterministic AST &amp; LLM trade-off feedback, and iteratively refine your designs to production grade.
+          Practice object-oriented design problems, check your class structure, and get feedback on design trade-offs.
         </p>
       </div>
 
       {/* Summary Stats Row */}
       <div className="stats-grid">
         <StatCard
-          label="COMPLETED ATTEMPTS"
+          label="Attempts Completed"
           value={metrics.completed_count || '10'}
           placeholderTag="[METRIC_COMPLETED_10]"
-          subtext="↑ 3 attempts completed this week"
+          subtext="Total submitted solutions"
           iconText="✓"
         />
         <StatCard
-          label="AVERAGE LLD SCORE"
+          label="Average Score"
           value={`${metrics.average_score || 83.5}%`}
-          placeholderTag="[PERCENTILE_8_STAFF]"
-          subtext="Calibrated against Staff L6 bar"
+          placeholderTag="[AVERAGE_SCORE_83.5]"
+          subtext="Across all completed attempts"
           iconText="★"
         />
         <StatCard
-          label="PRACTICE STREAK"
+          label="Current Streak"
           value={`${metrics.streak || 5} Days`}
           placeholderTag="[STREAK_5_DAYS]"
-          subtext="Consistent problem solving cadence"
+          subtext="Days in a row with an attempt"
           iconText="⚡"
         />
         <StatCard
-          label="SYSTEM READINESS"
-          value="85%"
-          placeholderTag="[TIER_1_READINESS_85%]"
-          subtext="Production architecture ready"
+          label="Problems Solved"
+          value="3 of 3"
+          placeholderTag="[PROBLEMS_SOLVED_3]"
+          subtext="Problems with at least one attempt"
           iconText="⬢"
         />
       </div>
@@ -87,9 +87,9 @@ export default function DashboardView({
         <div>
           <div className="section-header">
             <div>
-              <h2 className="section-title">Curated LLD Curriculum</h2>
+              <h2 className="section-title">Problems</h2>
               <p className="section-subtitle">
-                Foundational architecture problems testing design patterns, thread safety, and extensibility.
+                Choose a problem to start practicing.
               </p>
             </div>
           </div>
@@ -122,7 +122,7 @@ export default function DashboardView({
                   }}
                 >
                   <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                    {prob.functional_requirements.length} Core Requirements
+                    {prob.functional_requirements.length} Requirements
                   </span>
                   <button
                     className="btn btn-primary"
@@ -132,7 +132,7 @@ export default function DashboardView({
                       onSelectProblem(prob);
                     }}
                   >
-                    Open Studio →
+                    Start Problem →
                   </button>
                 </div>
               </div>
@@ -140,12 +140,12 @@ export default function DashboardView({
           </div>
         </div>
 
-        {/* Skill Mastery Radar Panel */}
+        {/* Skill Breakdown Panel */}
         <div>
           <div className="section-header">
             <div>
-              <h2 className="section-title">Competency Radar</h2>
-              <p className="section-subtitle">AST &amp; LLM Evaluated</p>
+              <h2 className="section-title">Skills Breakdown</h2>
+              <p className="section-subtitle">Across evaluated submissions</p>
             </div>
           </div>
           <SkillRadar skills={stats?.skill_radar} />
@@ -165,9 +165,9 @@ export default function DashboardView({
           }}
         >
           <div>
-            <h2 className="section-title">Active Assessments &amp; Attempt History</h2>
+            <h2 className="section-title">Recent Submissions</h2>
             <p className="section-subtitle">
-              Inspect submission status, deterministic AST breakdowns, and architectural trade-off feedback.
+              View submission status, score breakdowns, and feedback.
             </p>
           </div>
 
@@ -241,7 +241,7 @@ export default function DashboardView({
               fontSize: '0.92rem',
             }}
           >
-            No submission records match your filter criteria. Pick a problem above to start an attempt!
+            No submissions match the selected filters. Choose a problem above to get started.
           </div>
         ) : (
           <table className="data-table">
@@ -300,7 +300,7 @@ export default function DashboardView({
                       style={{ padding: '0.38rem 0.85rem', fontSize: '0.8rem' }}
                       onClick={() => onViewSubmission(sub.submission_id)}
                     >
-                      Inspect Result →
+                      View Feedback →
                     </button>
                   </td>
                 </tr>

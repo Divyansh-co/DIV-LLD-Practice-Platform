@@ -78,7 +78,7 @@ export default function App() {
       <main className="content-wrapper">
         {isLoading ? (
           <div style={{ textAlign: 'center', padding: '5rem 0', color: 'var(--text-muted)' }}>
-            Loading LLD Studio...
+            Loading...
           </div>
         ) : (
           <>

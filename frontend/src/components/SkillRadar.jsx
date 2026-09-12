@@ -6,7 +6,7 @@ export default function SkillRadar({ skills }) {
     'SOLID: Single Responsibility': 78,
     'SOLID: Open/Closed & Strategy': 88,
     'State Modeling & Encapsulation': 85,
-    'Architectural Extensibility': 80,
+    'Extensibility & Modularity': 80,
   };
 
   const data = skills || defaultSkills;
@@ -16,14 +16,14 @@ export default function SkillRadar({ skills }) {
       <div style={{ marginBottom: '1.45rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
           <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-pearly)', letterSpacing: '-0.01em' }}>
-            Competency Radar
+            Skill Breakdown
           </h3>
           <span className="badge badge-easy" style={{ fontSize: '0.68rem', padding: '0.15rem 0.55rem' }}>
             ACTIVE
           </span>
         </div>
         <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)' }}>
-          Real-time multidimensional evaluation across AST structural rules &amp; LLM trade-off heuristics.
+          Average scores across evaluated submissions.
         </p>
       </div>
 
@@ -89,9 +89,9 @@ export default function SkillRadar({ skills }) {
           boxShadow: 'var(--inner-highlight)',
         }}
       >
-        <span>Staff Engineer Benchmark</span>
+        <span>Target Benchmark</span>
         <span style={{ color: 'var(--accent-jungle)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-          &gt; 75% Mastery
+          &gt; 75% Target
         </span>
       </div>
     </div>

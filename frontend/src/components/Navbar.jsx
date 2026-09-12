@@ -6,8 +6,8 @@ export default function Navbar({ currentView, setView, activeProblem }) {
       <div className="nav-brand" onClick={() => setView('dashboard')}>
         <div className="brand-badge">LD</div>
         <div>
-          <span className="brand-title">LLD Studio</span>
-          <span className="brand-subtitle">Architect Sandbox</span>
+          <span className="brand-title">LLD Practice</span>
+          <span className="brand-subtitle">Design Platform</span>
         </div>
       </div>
 
@@ -22,13 +22,13 @@ export default function Navbar({ currentView, setView, activeProblem }) {
           className={`nav-btn ${currentView === 'practice' ? 'active' : ''}`}
           onClick={() => setView('practice')}
         >
-          Practice Studio {activeProblem ? `(${activeProblem.title.split(' ')[2] || 'Active'})` : ''}
+          Practice {activeProblem ? `(${activeProblem.title.split(' ')[2] || 'Active'})` : ''}
         </button>
         <button
           className={`nav-btn ${currentView === 'history' ? 'active' : ''}`}
           onClick={() => setView('history')}
         >
-          Attempt History
+          History
         </button>
       </div>
 
@@ -36,7 +36,7 @@ export default function Navbar({ currentView, setView, activeProblem }) {
         <div className="profile-avatar">DM</div>
         <div className="profile-info">
           <span className="profile-name">Divyansh Mishra</span>
-          <span className="profile-role">Lead Architect • 5d Streak</span>
+          <span className="profile-role">5-Day Streak</span>
         </div>
       </div>
     </nav>

@@ -94,7 +94,7 @@ export default function PracticeView({
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button className="btn btn-outline" onClick={onBack} style={{ fontSize: '0.82rem' }}>
-            ← Back to Catalog
+            ← Back to Problems
           </button>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
@@ -121,7 +121,7 @@ export default function PracticeView({
               gap: '0.35rem',
             }}
           >
-            {saveStatus === 'saving' && 'Syncing draft...'}
+            {saveStatus === 'saving' && 'Saving draft...'}
             {saveStatus === 'saved' && '✓ Draft saved'}
             {saveStatus === 'error' && '⚠ Save failed'}
           </span>
@@ -140,7 +140,7 @@ export default function PracticeView({
             disabled={isSubmitting}
             style={{ fontSize: '0.88rem' }}
           >
-            {isSubmitting ? 'Dispatching...' : 'Submit for Evaluation →'}
+            {isSubmitting ? 'Submitting...' : 'Submit Solution →'}
           </button>
         </div>
       </div>
@@ -150,7 +150,7 @@ export default function PracticeView({
         {/* Left Panel: Problem Specification */}
         <div className="studio-panel">
           <div className="panel-header">
-            <span className="panel-title">Specification &amp; Context</span>
+            <span className="panel-title">Problem Description</span>
             <div className="panel-tabs">
               <button
                 className={`panel-tab ${leftTab === 'requirements' ? 'active' : ''}`}
@@ -192,7 +192,7 @@ export default function PracticeView({
 
                 <div>
                   <h4 style={{ fontSize: '0.88rem', color: 'var(--text-pearly)', marginBottom: '0.5rem' }}>
-                    Non-Functional &amp; Architectural Focus
+                    Non-Functional Requirements
                   </h4>
                   <ul style={{ paddingLeft: '1.25rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                     {problem.non_functional_requirements.map((nfr, idx) => (
@@ -203,7 +203,7 @@ export default function PracticeView({
 
                 <div>
                   <h4 style={{ fontSize: '0.88rem', color: 'var(--text-pearly)', marginBottom: '0.5rem' }}>
-                    Key Domain Entities to Model
+                    Suggested Classes
                   </h4>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                     {problem.sample_entities.map((ent, idx) => (
@@ -228,7 +228,7 @@ export default function PracticeView({
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <h4 style={{ fontSize: '0.9rem', color: 'var(--text-pearly)' }}>
-                  Evaluation Rubric &amp; Weightings
+                  Scoring Rubric
                 </h4>
                 <div
                   style={{
@@ -240,24 +240,24 @@ export default function PracticeView({
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.45rem' }}>
-                    <span>Deterministic AST &amp; Structural Checks</span>
+                    <span>Class Structure &amp; Methods</span>
                     <strong style={{ color: 'var(--accent-jungle)' }}>40%</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.45rem' }}>
-                    <span>LLM Trade-off &amp; Extensibility Critique</span>
+                    <span>Trade-offs &amp; Extensibility</span>
                     <strong style={{ color: 'var(--accent-jungle)' }}>35%</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.45rem' }}>
-                    <span>SOLID Principles Compliance</span>
+                    <span>SOLID Principles</span>
                     <strong style={{ color: 'var(--accent-jungle)' }}>15%</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Concurrency &amp; Edge Case Handling</span>
+                    <span>Concurrency &amp; Edge Cases</span>
                     <strong style={{ color: 'var(--accent-jungle)' }}>10%</strong>
                   </div>
                 </div>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                  Our AST engine statically verifies class hierarchies, interface decoupling (Strategy/State patterns), and synchronization locks without forcing brittle class names.
+                  Code is checked for class relationships, inheritance, and concurrency guards without requiring exact method names.
                 </p>
               </div>
             )}
@@ -272,19 +272,19 @@ export default function PracticeView({
                 className={`panel-tab ${rightTab === 'code' ? 'active' : ''}`}
                 onClick={() => setRightTab('code')}
               >
-                Code Solution (Python)
+                Python Code
               </button>
               <button
                 className={`panel-tab ${rightTab === 'notes' ? 'active' : ''}`}
                 onClick={() => setRightTab('notes')}
               >
-                Design Notes (Markdown)
+                Design Notes
               </button>
               <button
                 className={`panel-tab ${rightTab === 'diagram' ? 'active' : ''}`}
                 onClick={() => setRightTab('diagram')}
               >
-                Mermaid Diagram DSL
+                Class Diagram
               </button>
             </div>
             <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
@@ -298,7 +298,7 @@ export default function PracticeView({
                 className="code-editor-area"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                placeholder="Write your object-oriented Low-Level Design solution classes here..."
+                placeholder="Write your Python classes and methods here..."
                 spellCheck="false"
               />
             )}
@@ -308,7 +308,7 @@ export default function PracticeView({
                 className="notes-editor-area"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Explain your architectural trade-offs, pattern rationale, and concurrency design..."
+                placeholder="Explain your design choices, trade-offs considered, and how you handled concurrency..."
               />
             )}
 
@@ -319,7 +319,7 @@ export default function PracticeView({
                   style={{ height: '320px' }}
                   value={diagramDsl}
                   onChange={(e) => setDiagramDsl(e.target.value)}
-                  placeholder="Enter Mermaid classDiagram syntax..."
+                  placeholder="Optional: write Mermaid classDiagram syntax..."
                   spellCheck="false"
                 />
                 <div
@@ -331,7 +331,7 @@ export default function PracticeView({
                     color: 'var(--text-muted)',
                   }}
                 >
-                  Tip: Diagrams are stored with your submission and verified during architectural evaluation.
+                  Tip: Diagrams are saved with your submission to document class relationships.
                 </div>
               </div>
             )}

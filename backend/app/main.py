@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="LLD Practice Platform API",
-    description="Low-Level Design practice, submission, and automated assessment platform.",
+    description="Low-level design practice and evaluation API.",
     version="1.0.0",
     lifespan=lifespan,
 )
